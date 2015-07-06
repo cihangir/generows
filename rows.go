@@ -1,4 +1,6 @@
-package rows
+// Package rows provides Json-schema based database rows to arbitrary struct
+// scanner generation
+package generows
 
 import (
 	"bytes"

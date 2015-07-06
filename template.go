@@ -1,4 +1,4 @@
-package rows
+package generows
 
 // RowScannerTemplate provides the template for rowscanner of models
 var RowScannerTemplate = `

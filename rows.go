@@ -18,6 +18,10 @@ type Generator struct{}
 
 // Generate generates and writes the errors of the schema
 func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]common.Output, error) {
+	if !common.IsIn("rows", context.Config.Generators...) {
+		return nil, nil
+	}
+
 	temp := template.New("rowscanner.tmpl").Funcs(context.TemplateFuncs)
 	if _, err := temp.Parse(RowScannerTemplate); err != nil {
 		return nil, err

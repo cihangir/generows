@@ -17,17 +17,25 @@ import (
 type Generator struct{}
 
 // Generate generates and writes the errors of the schema
-func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]common.Output, error) {
+func (g *Generator) Generate(req *common.Req, res *common.Res) error {
+	context := req.Context
+	s := req.Schema
+
+	if context == nil || context.Config == nil {
+		return nil
+	}
+
 	if !common.IsIn("rows", context.Config.Generators...) {
-		return nil, nil
+		return nil
 	}
 
 	temp := template.New("rowscanner.tmpl").Funcs(context.TemplateFuncs)
 	if _, err := temp.Parse(RowScannerTemplate); err != nil {
-		return nil, err
+		return err
 	}
 
 	outputs := make([]common.Output, 0)
+
 	for _, def := range common.SortedObjectSchemas(s.Definitions) {
 		data := struct {
 			Schema *schema.Schema
@@ -38,12 +46,12 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		var buf bytes.Buffer
 
 		if err := temp.ExecuteTemplate(&buf, "rowscanner.tmpl", data); err != nil {
-			return nil, err
+			return err
 		}
 
 		f, err := format.Source(buf.Bytes())
 		if err != nil {
-			return nil, err
+			return err
 		}
 
 		outputs = append(outputs, common.Output{
@@ -56,5 +64,6 @@ func (g *Generator) Generate(context *common.Context, s *schema.Schema) ([]commo
 		})
 	}
 
-	return outputs, nil
+	res.Output = outputs
+	return nil
 }

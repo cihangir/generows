@@ -7,16 +7,15 @@ import (
 	"strings"
 
 	"github.com/cihangir/gene/generators/common"
-	"github.com/cihangir/schema"
 )
 
 type Generator struct{}
 
-func pathfunc(context *common.Context, def *schema.Schema, moduleName string) string {
+func pathfunc(data *common.TemplateData) string {
 	return fmt.Sprintf(
 		"%s%s_rowscanner.go",
-		context.Config.Target,
-		strings.ToLower(def.Title),
+		data.Settings.Get("fullPathPrefix").(string),
+		strings.ToLower(data.Schema.Title),
 	)
 
 }
